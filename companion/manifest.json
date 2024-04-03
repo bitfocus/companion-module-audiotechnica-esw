@@ -1,0 +1,27 @@
+{
+	"id": "audiotechnica-esw",
+	"name": "audiotechnica-esw",
+	"shortname": "at-esw",
+	"description": "Audio Technica Engineered Sound Wireless",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/bitfocus/companion-module-audiotechnica-esw.git",
+	"bugs": "https://github.com/bitfocus/companion-module-audiotechnica-esw/issues",
+	"maintainers": [],
+	"legacyIds": [],
+	"runtime": {
+		"type": "node18",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../index.js"
+	},
+	"manufacturer": "Audio Technica",
+	"products": [
+		"Engineered Sound Wireless",
+		"ESW"
+	],
+	"keywords": [
+		"microphone",
+		"wireless"
+	]
+}
