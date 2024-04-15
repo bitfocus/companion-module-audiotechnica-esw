@@ -1,7 +1,9 @@
 const { InstanceStatus, TCPHelper } = require('@companion-module/base')
 
 module.exports = {
-	buildCommand(cmd, handshake, params) {
+	buildCommand: function (cmd, handshake, params) {
+		let self = this
+
 		let builtCmd = ''
 
 		builtCmd +=
@@ -9,21 +11,23 @@ module.exports = {
 			' ' +
 			handshake +
 			' ' +
-			this.CONTROL_MODELID +
+			self.CONTROL_MODELID +
 			' ' +
-			this.CONTROL_UNITNUMBER +
+			self.CONTROL_UNITNUMBER +
 			' ' +
-			this.CONTROL_CONTINUESELECT +
+			self.CONTROL_CONTINUESELECT +
 			' ' +
 			params +
 			' ' +
-			this.CONTROL_END
+			self.CONTROL_END
 
 		//console.log('builtCmd: ' + builtCmd);
 		return builtCmd
 	},
 
-	processError(response) {
+	processError: function (response) {
+		let self = this
+
 		let errorReturn = response.split(' ')
 
 		let errorCode = errorReturn[2]
@@ -52,70 +56,74 @@ module.exports = {
 				break
 		}
 
-		this.log('error', `Error: ${response} Error type: ${errorType}`)
+		self.log('error', `Error: ${response} Error type: ${errorType}`)
 	},
 
-	setUpInternalDataArrays() {
-		let model = this.MODELS.find((model) => model.id == this.config.model)
+	setUpInternalDataArrays: function () {
+		let self = this
+
+		let model = self.MODELS.find((model) => model.id == self.config.model)
 
 		if (model.data_request.includes('input_gain_level')) {
-			this.DATA.input_gain_levels = []
+			self.DATA.input_gain_levels = []
 		}
 	},
 
-	initTCP() {
+	initTCP: function () {
+		let self = this
+
 		let pipeline = ''
 
-		if (this.socket !== undefined) {
-			this.socket.destroy()
-			delete this.socket
+		if (self.socket !== undefined) {
+			self.socket.destroy()
+			delete self.socket
 		}
 
-		if (this.config.port === undefined) {
-			this.config.port = 17200
+		if (self.config.port === undefined) {
+			self.config.port = 17200
 		}
 
-		if (this.config.host) {
-			this.socket = new TCPHelper(this.config.host, this.config.port)
+		if (self.config.host) {
+			self.socket = new TCPHelper(self.config.host, self.config.port)
 
-			this.socket.on('status_change', (status, message) => {
-				this.updateStatus(status, message)
+			self.socket.on('status_change', (status, message) => {
+				self.updateStatus(status, message)
 			})
 
-			this.socket.on('error', (err) => {
-				this.log('error', 'Network error: ' + err.message)
-				this.updateStatus(InstanceStatus.ConnectionFailure)
-				clearInterval(this.pollTimer)
-				this.socket.destroy()
-				this.socket == null
+			self.socket.on('error', (err) => {
+				self.log('error', 'Network error: ' + err.message)
+				self.updateStatus(InstanceStatus.ConnectionFailure)
+				clearInterval(self.pollTimer)
+				self.socket.destroy()
+				self.socket == null
 			})
 
-			this.socket.on('connect', () => {
+			self.socket.on('connect', () => {
 				self.cmdPipe = []
 
-				this.initPolling()
+				self.initPolling()
 
-				this.updateStatus(InstanceStatus.Ok)
+				self.updateStatus(InstanceStatus.Ok)
 			})
 
-			this.socket.on('data', (receivebuffer) => {
+			self.socket.on('data', (receivebuffer) => {
 				pipeline += receivebuffer.toString('utf8')
 
 				//this whole area needs work because I think ACKs are sent on good response as well as a request for data
 
-				if (pipeline.includes(this.CONTROL_ACK)) {
+				if (pipeline.includes(self.CONTROL_ACK)) {
 					// ACKs are sent when a command is received, no processing is needed
 					pipeline = ''
-				} else if (pipeline.includes(this.CONTROL_NAK)) {
+				} else if (pipeline.includes(self.CONTROL_NAK)) {
 					// NAKs are sent on error, let's see what error we got
-					this.processError(pipeline)
+					self.processError(pipeline)
 					pipeline = ''
-				} else if (pipeline.includes(this.CONTROL_END)) {
+				} else if (pipeline.includes(self.CONTROL_END)) {
 					// Every command ends with CR or an ACK if nothing needed
-					let pipeline_responses = pipeline.split(this.CONTROL_END)
+					let pipeline_responses = pipeline.split(self.CONTROL_END)
 					for (let i = 0; i < pipeline_responses.length; i++) {
 						if (pipeline_responses[i] !== '') {
-							this.processResponse(pipeline_responses[i])
+							self.processResponse(pipeline_responses[i])
 						}
 					}
 
@@ -127,7 +135,7 @@ module.exports = {
 		}
 	},
 
-	cmdPipeNext() {
+	cmdPipeNext: function () {
 		let self = this
 
 		const return_cmd = self.cmdPipe.shift()
@@ -140,7 +148,7 @@ module.exports = {
 		return return_cmd
 	},
 
-	sendCommand(cmd, handshake, params) {
+	sendCommand: function (cmd, handshake, params) {
 		let self = this
 
 		if (cmd !== undefined) {
@@ -156,7 +164,7 @@ module.exports = {
 		}
 	},
 
-	runCommand(cmd, handshake, params) {
+	runCommand: function (cmd, handshake, params) {
 		let self = this
 
 		if (self.socket !== undefined && self.socket.isConnected) {
@@ -164,10 +172,10 @@ module.exports = {
 			self.socket
 				.send(self.buildCommand(cmd, handshake, params))
 				.then((result) => {
-					//console.log('send result: ' + result);
+					console.log('send result: ' + result)
 				})
 				.catch((error) => {
-					//console.log('send error: ' + error);
+					console.log('send error: ' + error)
 				})
 		} else {
 			self.log('error', 'Network error: Connection to Device not opened.')
@@ -175,7 +183,9 @@ module.exports = {
 		}
 	},
 
-	processResponse(response) {
+	processResponse: function (response) {
+		let self = this
+
 		let category = 'XXX'
 		let args = []
 		let params = ''
@@ -192,7 +202,7 @@ module.exports = {
 				}
 				return p
 			},
-			{ a: [''] },
+			{ a: [''] }
 		).a
 
 		if (args.length >= 1) {
@@ -210,22 +220,22 @@ module.exports = {
 		switch (category) {
 			//common data
 			case 'gmyname':
-				this.DATA.deviceName = params[0]
+				self.DATA.deviceName = params[0]
 				break
 			case 'gmydeviceid':
-				this.DATA.deviceId = params[0]
+				self.DATA.deviceId = params[0]
 				break
 			case 'glocationname':
-				this.DATA.locationName = params[0]
+				self.DATA.locationName = params[0]
 				break
 			case 'gpresetname':
-				this.DATA.presetNames[parseInt(params[0]) - 1] = params[1]
+				self.DATA.presetNames[parseInt(params[0]) - 1] = params[1]
 				break
 			case 'grmgpresetname':
-				this.DATA.roamingPresetNames[parseInt(params[0]) - 1] = params[1]
+				self.DATA.roamingPresetNames[parseInt(params[0]) - 1] = params[1]
 				break
 			case 'glastpreset':
-				this.DATA.lastPreset = params[0]
+				self.DATA.lastPreset = params[0]
 				break
 
 			//channel specific data
@@ -309,148 +319,150 @@ module.exports = {
 
 		let found = false
 
-		for (let i = 0; i < this.DATA.channels.length; i++) {
-			if (this.DATA.channels[i].id == channelObj.id) {
-				channels[i] = { ...channels[i], ...channelObj }
+		for (let i = 0; i < self.DATA.channels.length; i++) {
+			if (self.DATA.channels[i].id == channelObj.id) {
+				self.DATA.channels[i] = { ...self.DATA.channels[i], ...channelObj }
 				found = true
 				break
 			}
 		}
 
 		if (!found) {
-			this.DATA.channels.push(channelObj)
+			self.DATA.channels.push(channelObj)
 		}
 
-		this.checkFeedbacks()
-		this.checkVariables()
+		self.checkFeedbacks()
+		self.checkVariables()
 	},
 
-	initPolling() {
-		if (this.pollTimer === undefined && this.config.poll_interval > 0) {
-			this.pollTimer = setInterval(() => {
-				let model = this.MODELS.find((model) => model.id == this.config.model)
+	initPolling: function () {
+		let self = this
+
+		if (self.pollTimer === undefined && self.config.poll_interval > 0) {
+			self.pollTimer = setInterval(() => {
+				let model = self.MODELS.find((model) => model.id == self.config.model)
 
 				if (model) {
 					//grab specific data requests as per model
 					if (model.data_request.includes('gmyname')) {
-						this.sendCommand('gmyname', 'O', '')
+						self.sendCommand('gmyname', 'O', '')
 					}
 
 					if (model.data_request.includes('gmydeviceid')) {
-						this.sendCommand('gmydeviceid', 'O', '')
+						self.sendCommand('gmydeviceid', 'O', '')
 					}
 
 					if (model.data_request.includes('glocationname')) {
-						this.sendCommand('glocationname', 'O', '')
+						self.sendCommand('glocationname', 'O', '')
 					}
 
 					if (model.data_request.includes('gpresetname')) {
 						for (let i = 1; i <= 8; i++) {
-							this.sendCommand('gpresetname', 'O', i.toString())
+							self.sendCommand('gpresetname', 'O', i.toString())
 						}
 					}
 
 					if (model.data_request.includes('grmgpresetname')) {
 						for (let i = 1; i <= 8; i++) {
-							this.sendCommand('grmgpresetname', 'O', i.toString())
+							self.sendCommand('grmgpresetname', 'O', i.toString())
 						}
 					}
 
 					if (model.data_request.includes('glastpreset')) {
-						this.sendCommand('glastpreset', 'O', '')
+						self.sendCommand('glastpreset', 'O', '')
 					}
 
 					if (model.data_request.includes('gchname')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('gchname', 'O', model.channels[i].id)
+							self.sendCommand('gchname', 'O', model.channels[i].id)
 						}
 					}
 
 					if (model.data_request.includes('gchmute')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('gchmute', 'O', model.channels[i].id)
+							self.sendCommand('gchmute', 'O', model.channels[i].id)
 						}
 					}
 
 					if (model.data_request.includes('gchvolume')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('gchvolume', 'O', model.channels[i].id)
+							self.sendCommand('gchvolume', 'O', model.channels[i].id)
 						}
 					}
 
 					if (model.data_request.includes('gchhpf')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('gchhpf', 'O', model.channels[i].id)
+							self.sendCommand('gchhpf', 'O', model.channels[i].id)
 						}
 					}
 
 					if (model.data_request.includes('gtxmicgain')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('gtxmicgain', 'O', model.channels[i].id)
+							self.sendCommand('gtxmicgain', 'O', model.channels[i].id)
 						}
 					}
 
 					if (model.data_request.includes('gtxintmicgain')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('gtxintmicgain', 'O', model.channels[i].id)
+							self.sendCommand('gtxintmicgain', 'O', model.channels[i].id)
 						}
 					}
 
 					if (model.data_request.includes('gtxmicpolar')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('gtxmicpolar', 'O', model.channels[i].id)
+							self.sendCommand('gtxmicpolar', 'O', model.channels[i].id)
 						}
 					}
 
 					if (model.data_request.includes('gtxforcedmute')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('gtxforcedmute', 'O', model.channels[i].id)
+							self.sendCommand('gtxforcedmute', 'O', model.channels[i].id)
 						}
 					}
 
 					if (model.data_request.includes('glevelrf')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('glevelrf', 'O', model.channels[i].id)
+							self.sendCommand('glevelrf', 'O', model.channels[i].id)
 						}
 					}
 
 					if (model.data_request.includes('glevelafrx')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('glevelafrx', 'O', model.channels[i].id)
+							self.sendCommand('glevelafrx', 'O', model.channels[i].id)
 						}
 					}
 
 					if (model.data_request.includes('glevelbatttx')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('glevelbatttx', 'O', model.channels[i].id)
+							self.sendCommand('glevelbatttx', 'O', model.channels[i].id)
 						}
 					}
 
 					if (model.data_request.includes('glevelbatt')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('glevelbatt', 'O', model.channels[i].id)
+							self.sendCommand('glevelbatt', 'O', model.channels[i].id)
 						}
 					}
 
 					if (model.data_request.includes('gstsmute')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('gstsmute', 'O', model.channels[i].id)
+							self.sendCommand('gstsmute', 'O', model.channels[i].id)
 						}
 					}
 
 					if (model.data_request.includes('gtxname')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('gtxname', 'O', model.channels[i].id)
+							self.sendCommand('gtxname', 'O', model.channels[i].id)
 						}
 					}
 
 					if (model.data_request.includes('gtxlocationname')) {
 						for (let i = 0; i < model.channels.length; i++) {
-							this.sendCommand('gtxlocationname', 'O', model.channels[i].id)
+							self.sendCommand('gtxlocationname', 'O', model.channels[i].id)
 						}
 					}
 				}
-			}, this.config.poll_interval)
+			}, self.config.poll_interval)
 		}
 	},
 }

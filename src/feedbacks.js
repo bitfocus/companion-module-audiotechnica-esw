@@ -127,7 +127,11 @@ module.exports = {
 
 						let presetNumber = opt.preset
 
-						if (self.DATA && self.DATA.lastPresetRecalled && self.DATA.lastPresetRecalled.toString() == presetNumber.toString()) {
+						if (
+							self.DATA &&
+							self.DATA.lastPresetRecalled &&
+							self.DATA.lastPresetRecalled.toString() == presetNumber.toString()
+						) {
 							return true
 						}
 

@@ -16,12 +16,6 @@
 		"entrypoint": "../index.js"
 	},
 	"manufacturer": "Audio Technica",
-	"products": [
-		"Engineered Sound Wireless",
-		"ESW"
-	],
-	"keywords": [
-		"microphone",
-		"wireless"
-	]
+	"products": ["Engineered Sound Wireless", "ESW"],
+	"keywords": ["microphone", "wireless"]
 }
