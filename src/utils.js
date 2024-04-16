@@ -30,14 +30,16 @@ module.exports = {
 
 		let errorReturn = response.split(' ')
 
-		let errorCode = errorReturn[2]
+		let errorCode = errorReturn[2].toString()
 
 		let errorType = ''
 
 		switch (errorCode) {
-			case '01': // Grammar error
+			case '01': // Grammar/Syntax error
+				errorType = 'Grammar/Syntax error'
 				break
 			case '02': // Invalid command
+				errorType = 'Invalid command'
 				break
 			case '03': // Divided Transmission error
 				break
@@ -47,12 +49,17 @@ module.exports = {
 			case '05': // Transmit timeout
 				break
 			case '90': // Busy
+				errorType = 'System is Busy'
 				break
 			case '92': // Busy (Safe Mode)
 				break
 			case '93': // Busy (Extension)
 				break
 			case '99': // Other
+				errorType = 'Other error'
+				break
+			default:
+				errorType = 'Unknown error: NAK code ' + errorCode
 				break
 		}
 
@@ -348,7 +355,7 @@ module.exports = {
 						self.sendCommand('gmyname', 'O', '')
 					}
 
-					if (model.data_request.includes('gmydeviceid')) {
+					/*if (model.data_request.includes('gmydeviceid')) {
 						self.sendCommand('gmydeviceid', 'O', '')
 					}
 
@@ -460,7 +467,7 @@ module.exports = {
 						for (let i = 0; i < model.channels.length; i++) {
 							self.sendCommand('gtxlocationname', 'O', model.channels[i].id)
 						}
-					}
+					}*/
 				}
 			}, self.config.poll_interval)
 		}
