@@ -16,7 +16,7 @@ module.exports = {
 			self.CONTROL_UNITNUMBER +
 			' ' +
 			self.CONTROL_CONTINUESELECT +
-			' ' +
+			(params == '' ? '' : ' ') + //don't send extra space if there are no params
 			params +
 			' ' +
 			self.CONTROL_END
@@ -355,7 +355,7 @@ module.exports = {
 						self.sendCommand('gmyname', 'O', '')
 					}
 
-					/*if (model.data_request.includes('gmydeviceid')) {
+					if (model.data_request.includes('gmydeviceid')) {
 						self.sendCommand('gmydeviceid', 'O', '')
 					}
 
@@ -467,7 +467,7 @@ module.exports = {
 						for (let i = 0; i < model.channels.length; i++) {
 							self.sendCommand('gtxlocationname', 'O', model.channels[i].id)
 						}
-					}*/
+					}
 				}
 			}, self.config.poll_interval)
 		}
