@@ -18,7 +18,7 @@ module.exports = {
 			self.CONTROL_CONTINUESELECT +
 			(params == '' ? '' : ' ') + //don't send extra space if there are no params
 			params +
-			' ' +
+			(params == '' ? '' : ' ') + //don't send extra space if there are no params
 			self.CONTROL_END
 
 		//console.log('builtCmd: ' + builtCmd);
