@@ -8,14 +8,14 @@ module.exports = {
 				id: 'info',
 				width: 12,
 				label: 'Information',
-				value: 'This module will connect to an Audio-Technica Engineered Sound Wireless System.',
+				value: 'This module will connect to an Audio-Technica Engineered Sound Wireless (ESW) Device.',
 			},
 			{
 				type: 'textinput',
 				id: 'host',
 				label: 'IP Address',
 				width: 6,
-				default: '192.168.0.1',
+				default: '',
 				regex: Regex.IP,
 			},
 			{

@@ -16,10 +16,12 @@ module.exports = {
 			self.CONTROL_UNITNUMBER +
 			' ' +
 			self.CONTROL_CONTINUESELECT +
-			(params == '' ? '' : ' ') + //don't send extra space if there are no params
-			params +
-			(params == '' ? '' : ' ') + //don't send extra space if there are no params
-			self.CONTROL_END
+			' ' +
+			params// + 
+			//(params == '' ? '' : ' ') //don't send extra space if there are no params
+
+		//console.log('builtCmd: *' + builtCmd + '*')
+			builtCmd += self.CONTROL_END
 
 		//console.log('builtCmd: ' + builtCmd);
 		return builtCmd
@@ -30,32 +32,49 @@ module.exports = {
 
 		let errorReturn = response.split(' ')
 
-		let errorCode = errorReturn[2].toString()
+		//console.log('response: ' + response)
+
+		let errorCode = parseInt(errorReturn[5])
+
+		//console.log('errorCode: *' + errorCode + '*')
 
 		let errorType = ''
 
+		if (errorCode == 2) {
+			//ignore it for now
+			return
+		}
+
 		switch (errorCode) {
-			case '01': // Grammar/Syntax error
+			case 1: // Grammar/Syntax error
 				errorType = 'Grammar/Syntax error'
 				break
-			case '02': // Invalid command
+			case 2: // Invalid command
 				errorType = 'Invalid command'
 				break
-			case '03': // Divided Transmission error
+			case 3: // Divided Transmission error
 				break
-			case '04': // Parameter error
+			case 4: // Parameter error
 				errorType = 'Parameter error'
 				break
-			case '05': // Transmit timeout
+			case 5: // Transmit timeout
 				break
-			case '90': // Busy
+			case 11: // ignore
+				//this seems to happen when the device does not having anything in that particular charging port
+				//I think the best approach is to reset the data arrays and let the next poll check for the data
+				//but only if it was a battery level request
+				if (response.includes('glevelbatt')) {
+					self.DATA.channels = []
+				}
+				return
+			case 90: // Busy
 				errorType = 'System is Busy'
 				break
-			case '92': // Busy (Safe Mode)
+			case 92: // Busy (Safe Mode)
 				break
-			case '93': // Busy (Extension)
+			case 93: // Busy (Extension)
 				break
-			case '99': // Other
+			case 99: // Other
 				errorType = 'Other error'
 				break
 			default:
@@ -81,10 +100,7 @@ module.exports = {
 
 		let pipeline = ''
 
-		if (self.socket !== undefined) {
-			self.socket.destroy()
-			delete self.socket
-		}
+		self.destroy()
 
 		if (self.config.port === undefined) {
 			self.config.port = 17200
@@ -92,10 +108,6 @@ module.exports = {
 
 		if (self.config.host) {
 			self.socket = new TCPHelper(self.config.host, self.config.port)
-
-			self.socket.on('status_change', (status, message) => {
-				self.updateStatus(status, message)
-			})
 
 			self.socket.on('error', (err) => {
 				self.log('error', 'Network error: ' + err.message)
@@ -115,8 +127,6 @@ module.exports = {
 
 			self.socket.on('data', (receivebuffer) => {
 				pipeline += receivebuffer.toString('utf8')
-
-				//this whole area needs work because I think ACKs are sent on good response as well as a request for data
 
 				if (pipeline.includes(self.CONTROL_ACK)) {
 					// ACKs are sent when a command is received, no processing is needed
@@ -179,7 +189,7 @@ module.exports = {
 			self.socket
 				.send(self.buildCommand(cmd, handshake, params))
 				.then((result) => {
-					console.log('send result: ' + result)
+					//console.log('send result: ' + result)
 				})
 				.catch((error) => {
 					console.log('send error: ' + error)

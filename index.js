@@ -60,8 +60,6 @@ class ateswInstance extends InstanceBase {
 			clearInterval(this.pollTimer)
 			delete this.pollTimer
 		}
-
-		//debug('destroy', this.id)
 	}
 
 	async init(config) {
@@ -77,14 +75,18 @@ class ateswInstance extends InstanceBase {
 		}
 		this.config = config
 
-		this.setUpInternalDataArrays()
-
 		this.initActions()
 		this.initFeedbacks()
 		this.initVariables()
 		this.initPresets()
 
-		this.initTCP()
+		if (this.config.host && this.config.host !== '') {
+			this.setUpInternalDataArrays()
+			this.initTCP()
+		}
+		else {
+			this.updateStatus(InstanceStatus.UnknownWarning, 'Please configure module.')
+		}
 	}
 }
 
