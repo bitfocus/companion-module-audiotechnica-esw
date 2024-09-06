@@ -64,7 +64,12 @@ module.exports = {
 				//I think the best approach is to reset the data arrays and let the next poll check for the data
 				//but only if it was a battery level request
 				if (response.includes('glevelbatt')) {
-					self.DATA.channels = []
+					//clear the levelBatt property frrom the channel based on self.lastReturnedCommand.params
+					let channel = self.lastReturnedCommand.params[0]
+					let channelObj = self.DATA.channels.find((channelObj) => channelObj.id == channel)
+					if (channelObj) {
+						channelObj.levelBatt = undefined
+					}
 				}
 				return
 			case 90: // Busy
@@ -129,13 +134,16 @@ module.exports = {
 				pipeline += receivebuffer.toString('utf8')
 
 				if (pipeline.includes(self.CONTROL_ACK)) {
+					self.lastReturnedCommand = self.cmdPipeNext()
 					// ACKs are sent when a command is received, no processing is needed
 					pipeline = ''
 				} else if (pipeline.includes(self.CONTROL_NAK)) {
+					self.lastReturnedCommand = self.cmdPipeNext()
 					// NAKs are sent on error, let's see what error we got
 					self.processError(pipeline)
 					pipeline = ''
 				} else if (pipeline.includes(self.CONTROL_END)) {
+					self.lastReturnedCommand = self.cmdPipeNext()
 					// Every command ends with CR or an ACK if nothing needed
 					let pipeline_responses = pipeline.split(self.CONTROL_END)
 					for (let i = 0; i < pipeline_responses.length; i++) {
@@ -146,8 +154,6 @@ module.exports = {
 
 					pipeline = ''
 				}
-
-				self.lastReturnedCommand = self.cmdPipeNext()
 			})
 		}
 	},
