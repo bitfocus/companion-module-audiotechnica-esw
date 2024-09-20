@@ -143,7 +143,7 @@ module.exports = {
 					options: [
 						{
 							type: 'dropdown',
-							label: 'Charger Port Where TX is Installed',
+							label: 'Channel',
 							id: 'channel',
 							default: model.channels[0].id,
 							choices: model.channels,
@@ -174,7 +174,7 @@ module.exports = {
 					options: [
 						{
 							type: 'dropdown',
-							label: 'Charger Port Where TX is Installed',
+							label: 'Channel',
 							id: 'channel',
 							default: model.channels[0].id,
 							choices: model.channels,
@@ -205,7 +205,7 @@ module.exports = {
 					options: [
 						{
 							type: 'dropdown',
-							label: 'Charger Port Where TX is Installed',
+							label: 'Channel',
 							id: 'channel',
 							default: model.channels[0].id,
 							choices: model.channels,
