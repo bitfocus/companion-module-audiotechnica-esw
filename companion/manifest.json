@@ -7,7 +7,12 @@
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-audiotechnica-esw.git",
 	"bugs": "https://github.com/bitfocus/companion-module-audiotechnica-esw/issues",
-	"maintainers": [],
+	"maintainers": [
+		{
+			"name": "Joseph Adams",
+			"email": "hello@josephadams.dev"
+		}
+	],
 	"legacyIds": [],
 	"runtime": {
 		"type": "node18",
