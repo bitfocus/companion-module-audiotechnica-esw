@@ -270,8 +270,7 @@ module.exports = {
 								channelObj.levelBattTx?.batteryLife?.substring(2, 4)
 							variableObj[`${modelChannelObj.variableId}_batttx_usb`] =
 								channelObj.levelBattTx?.usbStatus == '0' ? 'Not Charging' : 'Charging'
-						}
-						else {
+						} else {
 							variableObj[`${modelChannelObj.variableId}_batttx_linkstatus`] = ''
 							variableObj[`${modelChannelObj.variableId}_batttx_level`] = ''
 							variableObj[`${modelChannelObj.variableId}_batttx_life`] = ''
@@ -281,17 +280,20 @@ module.exports = {
 						if (channelObj.levelBatt) {
 							variableObj[`${modelChannelObj.variableId}_batt_portstatus`] =
 								channelObj.levelBatt?.portStatus == '0' ? 'Not Set' : 'Set'
-							variableObj[`${modelChannelObj.variableId}_batt_level`] = channelObj.levelBatt?.batteryLevel + '%'
+							variableObj[`${modelChannelObj.variableId}_batt_level`] =
+								channelObj.levelBatt?.batteryLevel + '%'
 							variableObj[`${modelChannelObj.variableId}_batt_cycle`] = channelObj.levelBatt?.batteryCycle
-							variableObj[`${modelChannelObj.variableId}_batt_health`] = channelObj.levelBatt?.batteryHealth
+							variableObj[`${modelChannelObj.variableId}_batt_health`] =
+								channelObj.levelBatt?.batteryHealth
 							variableObj[`${modelChannelObj.variableId}_batt_timetofull`] =
 								channelObj.levelBatt?.batteryTimeToFull?.substring(0, 2) +
 								':' +
 								channelObj.levelBatt?.batteryTimeToFull?.substring(2, 4)
-							variableObj[`${modelChannelObj.variableId}_batt_temp`] = channelObj.levelBatt?.batteryTemp + '°C'
-							variableObj[`${modelChannelObj.variableId}_batt_chargestatus`] = channelObj.levelBatt?.batteryChargeStatus
-						}
-						else {
+							variableObj[`${modelChannelObj.variableId}_batt_temp`] =
+								channelObj.levelBatt?.batteryTemp + '°C'
+							variableObj[`${modelChannelObj.variableId}_batt_chargestatus`] =
+								channelObj.levelBatt?.batteryChargeStatus
+						} else {
 							variableObj[`${modelChannelObj.variableId}_batt_portstatus`] = ''
 							variableObj[`${modelChannelObj.variableId}_batt_level`] = ''
 							variableObj[`${modelChannelObj.variableId}_batt_cycle`] = ''
@@ -303,10 +305,8 @@ module.exports = {
 
 						variableObj[`${modelChannelObj.variableId}_txmute`] = channelObj.txMute ? 'On' : 'Off'
 						variableObj[`${modelChannelObj.variableId}_txname`] = channelObj.txName?.replace('*', '')
-						variableObj[`${modelChannelObj.variableId}_txlocationname`] = channelObj.txLocationName?.replace(
-							'*',
-							'',
-						)
+						variableObj[`${modelChannelObj.variableId}_txlocationname`] =
+							channelObj.txLocationName?.replace('*', '')
 					}
 				}
 			}

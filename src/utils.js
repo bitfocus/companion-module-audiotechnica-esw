@@ -17,11 +17,11 @@ module.exports = {
 			' ' +
 			self.CONTROL_CONTINUESELECT +
 			' ' +
-			params// + 
-			//(params == '' ? '' : ' ') //don't send extra space if there are no params
+			params // +
+		//(params == '' ? '' : ' ') //don't send extra space if there are no params
 
 		//console.log('builtCmd: *' + builtCmd + '*')
-			builtCmd += self.CONTROL_END
+		builtCmd += self.CONTROL_END
 
 		//console.log('builtCmd: ' + builtCmd);
 		return builtCmd
@@ -225,7 +225,7 @@ module.exports = {
 				}
 				return p
 			},
-			{ a: [''] }
+			{ a: [''] },
 		).a
 
 		if (args.length >= 1) {

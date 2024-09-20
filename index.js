@@ -83,8 +83,7 @@ class ateswInstance extends InstanceBase {
 		if (this.config.host && this.config.host !== '') {
 			this.setUpInternalDataArrays()
 			this.initTCP()
-		}
-		else {
+		} else {
 			this.updateStatus(InstanceStatus.UnknownWarning, 'Please configure module.')
 		}
 	}
