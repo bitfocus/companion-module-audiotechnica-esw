@@ -23,6 +23,7 @@ module.exports = {
 				'gtxintmicgain',
 				'gtxmicpolar',
 				'gtxforcedmute',
+				'gstsmute',
 			],
 			variables: [
 				'gchname',
@@ -100,6 +101,7 @@ module.exports = {
 				'gtxintmicgain',
 				'gtxmicpolar',
 				'gtxforcedmute',
+				'gstsmute',
 			],
 			variables: [
 				'gchname',
@@ -177,6 +179,7 @@ module.exports = {
 				'gtxintmicgain',
 				'gtxmicpolar',
 				'gtxforcedmute',
+				'gstsmute',
 			],
 			variables: [
 				'gchname',

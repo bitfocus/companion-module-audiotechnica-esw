@@ -326,8 +326,8 @@ module.exports = {
 			case 'gstsmute':
 				channelObj.id = params[0]
 				channelObj.stsMute = {
-					chMute: params[1] == '1' ? true : false,
-					txMute: params[2] == '1' ? true : false,
+					chMute: parseInt(params[1]) == 1 ? true : false,
+					txMute: parseInt(params[2]) == 1 ? true : false,
 				}
 				break
 			case 'gtxname':

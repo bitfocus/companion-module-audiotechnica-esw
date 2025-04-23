@@ -185,6 +185,43 @@ module.exports = {
 					},
 				}
 			}
+
+			if (model.feedbacks.includes('gstsmute')) {
+				feedbacks['gstsmute'] = {
+					type: 'boolean',
+					name: 'TX is Muted',
+					description: 'Indicates if the TX is muted',
+					options: [
+						{
+							type: 'dropdown',
+							label: 'Channel',
+							id: 'channel',
+							default: model.channels[0].id,
+							choices: model.channels,
+						},
+					],
+					defaultStyle: {
+						color: combineRgb(0, 0, 0),
+						bgcolor: combineRgb(255, 0, 0),
+					},
+					callback: (event) => {
+						let opt = event.options
+
+						//get the channel from the options
+						let channelNumber = opt.channel
+
+						//get the channelObj
+						let channelObj = self.DATA.channels.find((channel) => channel.id == channelNumber)
+
+						//check if the channel is muted
+						if (channelObj && channelObj.stsMute?.txMute == true) {
+							return true
+						}
+
+						return false
+					},
+				}
+			}
 		}
 
 		this.setFeedbackDefinitions(feedbacks)

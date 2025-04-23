@@ -303,7 +303,7 @@ module.exports = {
 							variableObj[`${modelChannelObj.variableId}_batt_chargestatus`] = ''
 						}
 
-						variableObj[`${modelChannelObj.variableId}_txmute`] = channelObj.txMute ? 'On' : 'Off'
+						variableObj[`${modelChannelObj.variableId}_txmute`] = channelObj.stsMute.txMute ? 'On' : 'Off'
 						variableObj[`${modelChannelObj.variableId}_txname`] = channelObj.txName?.replace('*', '')
 						variableObj[`${modelChannelObj.variableId}_txlocationname`] =
 							channelObj.txLocationName?.replace('*', '')
