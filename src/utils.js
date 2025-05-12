@@ -72,6 +72,11 @@ module.exports = {
 					}
 				}
 				return
+			case 61:
+				//ignore
+				return
+			case 62: // Invalid parameter, ignore
+				return
 			case 90: // Busy
 				errorType = 'System is Busy'
 				break
